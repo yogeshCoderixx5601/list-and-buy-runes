@@ -1,7 +1,7 @@
 // set runes in [runes] based on the ordinal address in user collection
 import dbConnect from "@/lib/dbconnect";
 import { RuneUtxo, User } from "@/modals";
-import { IRune, IUTXOs } from "@/types";
+import { AddressTxsUtxo, IRune, IUTXOs, RuneDetails } from "@/types";
 import { aggregateRuneAmounts, getRunes } from "@/utils/GetRunes";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -23,7 +23,7 @@ const runes = aggregateRuneAmount.map(
   (rune: {
     rune_name: string;
     rune_amount: number;
-    rune_divisibility: string;
+    rune_divisibility: number;
     rune_symbol: string;
   }) => ({
     rune_name: rune.rune_name,
@@ -55,36 +55,31 @@ const runes = aggregateRuneAmount.map(
       }
     }
 
-    const transformedUtxos = runesUtxos.map((utxo: IUTXOs) => {
-        console.log(utxo, "inside transfered utxos")
-      const runes: IRune[] = Object.entries(utxo.rune || {}).map(
-        ([key, value]) => {
-          // Explicitly type the value
-          const runeValue = value as {
-            rune_name: string;
-            amount: number;
-            divisibility: number;
-            symbol: string;
-          };
-          return {
-            rune_name: key,
-            rune_amount: runeValue.amount,
-            rune_divisibility: runeValue.divisibility,
-            rune_symbol: runeValue.symbol,
-          };
-        }
-      );
-      console.log(runes, "runes");
-      const { rune, ...rest } = utxo;
-
-      // Assuming there is only one rune in each utxo.rune object
-      const [firstRune] = runes;
-
+   const transformedUtxos = runesUtxos.map((utxo: AddressTxsUtxo) => {
+  console.log(utxo, "inside transformed utxos");
+  const runes: IRune[] = Object.entries(utxo.rune || {}).map(
+    ([key, value]) => {
+      // Explicitly type the value
+      const runeValue = value as RuneDetails;
       return {
-        ...rest,
-        ...firstRune,
+        rune_name: key,
+        rune_amount: runeValue.amount,
+        rune_divisibility: runeValue.divisibility,
+        rune_symbol: runeValue.symbol,
       };
-    });
+    }
+  );
+  console.log(runes, "runes");
+  const { rune, ...rest } = utxo;
+
+  // Assuming there is only one rune in each utxo.rune object
+  const [firstRune] = runes;
+
+  return {
+    ...rest,
+    ...firstRune,
+  } as IUTXOs;
+});
     console.log(transformedUtxos, "------transformedUtxos");
 
     // create new doc in utxoModal

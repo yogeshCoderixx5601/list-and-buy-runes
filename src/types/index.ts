@@ -8,17 +8,37 @@ export interface IWalletDetails {
   connected?: boolean;
 }
 
-interface Status {
+export interface Status {
   confirmed: boolean;
   block_height: number;
   block_hash: string;
   block_time: number;
 }
 
+export interface RuneDetails {
+  amount: number;
+  divisibility: number;
+  symbol: string;
+}
+
+export interface Rune {
+  [key: string]: RuneDetails;
+}
+
+export interface AddressTxsUtxo {
+  txid: string;
+  vout: number;
+  status: Status;
+  value: number;
+  rune: Rune;
+  utxo_id: string;
+  address: string;
+}
+
 export interface IRune {
-  rune_divisibility: number;
   rune_name: string;
   rune_amount: number;
+  rune_divisibility: number;
   rune_symbol: string;
 }
 
@@ -27,10 +47,14 @@ export interface IUTXOs {
   vout: number;
   status: Status;
   value: number;
-  rune: IRune;
+  rune_divisibility: number;
+  rune_name: string;
+  rune_amount: number;
+  rune_symbol: string;
   utxo_id: string;
   address: string;
 }
+
 
 export interface Utxo {
   _id: string;
@@ -52,26 +76,9 @@ export interface Utxo {
   maker_fee_bp: number;
   listed?: boolean;
   listed_price: number;
-  listed_price_per_token:number;
+  listed_price_per_token: number;
   listed_maker_fee_bp: number;
   __v: number;
-}
-
-export interface AddressTxsUtxo {
-  address: string;
-  utxo_id: string;
-  rune: any;
-  txid: string;
-  vout: number;
-  status: TxStatus;
-  value: number;
-}
-
-export interface TxStatus {
-  confirmed: boolean;
-  block_height: number;
-  block_hash: string;
-  block_time: number;
 }
 
 export interface IBalanceData {

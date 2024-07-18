@@ -1,7 +1,5 @@
-// import { AddressTxsUtxo, IRune, RuneDetails } from "@/types";
-import { AddressTxsUtxo } from "@/types";
+import { AddressTxsUtxo, IRune, Rune } from "@/types";
 import axios from "axios";
-// import { address } from "bitcoinjs-lib";
 
 export async function getRunes(payment_address: string) {
   let allUtxos: AddressTxsUtxo[];
@@ -38,7 +36,6 @@ export async function getUtxosByAddress(address: string): Promise<AddressTxsUtxo
 
 export async function selectRunesUTXOs(utxos: AddressTxsUtxo[],payment_address: string): Promise<any[]> {
   const selectedUtxos: any = [];
-  console.log(payment_address,"---------------payment_address")
   // Sort descending by value, and filter out dummy UTXOs
   utxos = utxos.sort((a, b) => b.value - a.value);
   
@@ -51,7 +48,7 @@ export async function selectRunesUTXOs(utxos: AddressTxsUtxo[],payment_address: 
       selectedUtxos.push(utxo);
     }
   }
-
+  console.log(selectedUtxos,"--------selected utxos")
   return selectedUtxos;
 }
 
@@ -89,11 +86,11 @@ export async function doesUtxoContainRunes(utxo: AddressTxsUtxo): Promise<any> {
   }
 }
 
-export const extractDetails = (rune: AddressTxsUtxo | null | undefined) => {
+export const extractDetails = (rune: Rune | null | undefined): IRune[] => {
   if (!rune) {
     return []; // Return an empty array if rune is null or undefined
   }
-  
+
   const entries = Object.entries(rune);
   const result = entries.map(([rune_name, details]) => ({
     rune_name,
@@ -101,15 +98,18 @@ export const extractDetails = (rune: AddressTxsUtxo | null | undefined) => {
     rune_divisibility: details.divisibility,
     rune_symbol: details.symbol,
   }));
-  
+
   return result;
 };
 
+
 export const aggregateRuneAmounts = (runesUtxos: AddressTxsUtxo[]) => {
-  const runeMap = new Map<string, { rune_amount: number, rune_divisibility: string, rune_symbol: string }>();
+  const runeMap = new Map<string, { rune_amount: number, rune_divisibility: number, rune_symbol: string }>();
 
   for (const runesUtxo of runesUtxos) {
     const rune = runesUtxo.rune; // Assuming runesUtxo is an AddressTxsUtxo object
+    console.log(rune, "in aggregate rune amount");
+
     const runeDetails = extractDetails(rune);
 
     for (const { rune_name, rune_amount, rune_divisibility, rune_symbol } of runeDetails) {
@@ -131,7 +131,8 @@ export const aggregateRuneAmounts = (runesUtxos: AddressTxsUtxo[]) => {
 
   // Convert the Map to an array of objects
   const result = Array.from(runeMap, ([rune_name, { rune_amount, rune_divisibility, rune_symbol }]) => ({ rune_name, rune_amount, rune_divisibility, rune_symbol }));
-  
+
   return result;
 };
+
 
