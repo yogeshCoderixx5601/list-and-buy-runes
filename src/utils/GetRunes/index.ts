@@ -15,8 +15,6 @@ export async function getRunes(payment_address: string) {
 
   try {
     runesUtxos = await selectRunesUTXOs(allUtxos,payment_address);
-
-  console.log({runesUtxos})
     return runesUtxos
   } catch (err: any) {
     throw new Error(err);
@@ -48,7 +46,6 @@ export async function selectRunesUTXOs(utxos: AddressTxsUtxo[],payment_address: 
       selectedUtxos.push(utxo);
     }
   }
-  console.log(selectedUtxos,"--------selected utxos")
   return selectedUtxos;
 }
 
@@ -72,7 +69,6 @@ export async function doesUtxoContainRunes(utxo: AddressTxsUtxo): Promise<any> {
     
     console.log( response.data.runes, "RUNES RESPONSE FROM ORD SERVER")
     const runeEntries = Object.entries(response.data.runes)
-    console.log(runeEntries,"-------runeEntries")
     if ( runeEntries.length > 0) {
       console.log("Runes data found:", response.data.runes);
       return response.data.runes;
@@ -108,7 +104,6 @@ export const aggregateRuneAmounts = (runesUtxos: AddressTxsUtxo[]) => {
 
   for (const runesUtxo of runesUtxos) {
     const rune = runesUtxo.rune; // Assuming runesUtxo is an AddressTxsUtxo object
-    console.log(rune, "in aggregate rune amount");
 
     const runeDetails = extractDetails(rune);
 

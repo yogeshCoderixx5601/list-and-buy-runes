@@ -35,12 +35,14 @@ export interface AddressTxsUtxo {
   address: string;
 }
 
-export interface IRune {
+export interface IRuneBase {
   rune_name: string;
   rune_amount: number;
   rune_divisibility: number;
   rune_symbol: string;
 }
+ export interface IRune extends IRuneBase {
+    _id?:string;}
 
 export interface IUTXOs {
   txid: string;
@@ -79,6 +81,19 @@ export interface Utxo {
   listed_price_per_token: number;
   listed_maker_fee_bp: number;
   __v: number;
+}
+
+export interface IItem {
+  price: number;
+  utxo_id: string;
+}
+
+export interface ITransaction {
+  pay_address?:string;
+  receive_address: string;
+  wallet: string;
+  publickey: string;
+  items: IItem[];
 }
 
 export interface IBalanceData {

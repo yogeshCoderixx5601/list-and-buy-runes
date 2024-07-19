@@ -226,7 +226,6 @@ async function generateUnsignedBuyingPSBTBase64(
     listing?.buyer?.buyerAddress.startsWith("bc1q") ||
     listing?.buyer?.buyerAddress.startsWith("tb1q");
 
-  const buyerPublicKey = listing?.buyer?.buyerPublicKey;
 
   if (
     !listing.buyer ||

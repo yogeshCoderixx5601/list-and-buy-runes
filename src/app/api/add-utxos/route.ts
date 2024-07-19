@@ -1,4 +1,3 @@
-// set runes in [runes] based on the ordinal address in user collection
 import dbConnect from "@/lib/dbconnect";
 import { RuneUtxo, User } from "@/modals";
 import { AddressTxsUtxo, IRune, IUTXOs, RuneDetails } from "@/types";
@@ -6,103 +5,92 @@ import { aggregateRuneAmounts, getRunes } from "@/utils/GetRunes";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-  console.log(
-    "************post runes to db for user and store utxos api called *************"
-  );
+  console.log("************ Post runes to DB and store UTXOs API called *************");
+  
   try {
     const walletDetails = await req.json();
-    // console.log(walletDetails, "wallet details");
-
     const runesUtxos = await getRunes(walletDetails.ordinal_address);
+    
+    await dbConnect();
+    
+    const aggregateRuneAmount = aggregateRuneAmounts(runesUtxos);
+    
+    const runesToUpdate = aggregateRuneAmount.map(rune => ({
+      rune_name: rune.rune_name,
+      rune_amount: rune.rune_amount,
+      rune_divisibility: rune.rune_divisibility,
+      rune_symbol: rune.rune_symbol,
+    }));
 
-   const aggregateRuneAmount = aggregateRuneAmounts(runesUtxos);
-
-await dbConnect();
-
-const runes = aggregateRuneAmount.map(
-  (rune: {
-    rune_name: string;
-    rune_amount: number;
-    rune_divisibility: number;
-    rune_symbol: string;
-  }) => ({
-    rune_name: rune.rune_name,
-    rune_amount: rune.rune_amount,
-    rune_divisibility: rune.rune_divisibility, 
-    rune_symbol: rune.rune_symbol, 
-  })
-);
-
-    for (const rune of runes) {
+    for (const rune of runesToUpdate) {
       const query = {
         ordinal_address: walletDetails.ordinal_address,
-        "runes.name": { $ne: rune.rune_name },
+        "runes.rune_name": { $ne: rune.rune_name },
       };
       const update = { $addToSet: { runes: rune } };
 
-      // updating user with runes
       const result = await User.findOneAndUpdate(query, update, {
         new: true,
         useFindAndModify: false,
       });
 
       if (result) {
-        // `Rune ${rune.name} already exists, no update performed`
-        console.log(`Rune updated successfully`);
+        console.log(`Rune ${rune.rune_name} updated successfully`);
       } else {
         console.log(`Rune ${rune.rune_name} already exists, no update performed`);
-        // throw new Error(`Rune ${rune.name} already exists, no update performed`)
       }
     }
 
-   const transformedUtxos = runesUtxos.map((utxo: AddressTxsUtxo) => {
-  console.log(utxo, "inside transformed utxos");
-  const runes: IRune[] = Object.entries(utxo.rune || {}).map(
-    ([key, value]) => {
-      // Explicitly type the value
-      const runeValue = value as RuneDetails;
-      return {
+    const transformedUtxos = runesUtxos.map((utxo: AddressTxsUtxo) => {
+      const runes: IRune[] = Object.entries(utxo.rune || {}).map(([key, value]) => ({
         rune_name: key,
-        rune_amount: runeValue.amount,
-        rune_divisibility: runeValue.divisibility,
-        rune_symbol: runeValue.symbol,
-      };
-    }
-  );
-  console.log(runes, "runes");
-  const { rune, ...rest } = utxo;
+        rune_amount: (value as RuneDetails).amount,
+        rune_divisibility: (value as RuneDetails).divisibility,
+        rune_symbol: (value as RuneDetails).symbol,
+      }));
 
-  // Assuming there is only one rune in each utxo.rune object
-  const [firstRune] = runes;
+      const { rune, ...rest } = utxo;
+      const [firstRune] = runes;
 
-  return {
-    ...rest,
-    ...firstRune,
-  } as IUTXOs;
-});
-    console.log(transformedUtxos, "------transformedUtxos");
+      return {
+        ...rest,
+        ...firstRune,
+      } as IUTXOs;
+    });
 
-    // create new doc in utxoModal
-    if (transformedUtxos) {
-      try {
-        const utxos = await RuneUtxo.insertMany(transformedUtxos, {
-          ordered: false,
-        });
-        console.log("Runes UTXOs saved successfully", utxos);
-        return NextResponse.json({
-          success: true,
-          message: "Data received and processed successfully.",
-        });
-      } catch (error) {
-        console.error("Error saving UTXOs:", error);
-        return NextResponse.json({
-          success: false,
-          message: "Error saving UTXOs. Please try again later.",
-        });
-      }
+  for (const utxo of transformedUtxos) {
+  try {
+    const existingUtxo = await RuneUtxo.findOne({ utxo_id: utxo.utxo_id });
+
+    if (!existingUtxo) {
+      // Insert if the UTXO doesn't exist
+      const insertedUtxo = await RuneUtxo.create(utxo);
+      console.log("Rune UTXO saved successfully", insertedUtxo);
+    } else {
+      console.log("Rune UTXO already exists, skipping insertion");
     }
   } catch (error) {
-    console.error("Error :", error);
-    return NextResponse.json({ error: "Error " }, { status: 500 });
+    console.error("Error saving Rune UTXO:", error);
+  }
+}
+
+// Respond based on the operation outcome
+if (transformedUtxos.length > 0) {
+  return NextResponse.json({
+    success: true,
+    message: "Data received and processed successfully.",
+  });
+} else {
+  return NextResponse.json({
+    success: false,
+    message: "No UTXOs to save.",
+  });
+}
+  } catch (error) {
+    console.error("Error:", error);
+    return NextResponse.json({
+      success: false,
+      message: "Error processing request. Please try again later.",
+    });
   }
 }
