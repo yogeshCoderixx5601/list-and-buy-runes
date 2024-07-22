@@ -12,28 +12,9 @@ import { RuneUtxo } from "@/modals";
 
 import * as bitcoin from "bitcoinjs-lib";
 import secp256k1 from "@bitcoinerlab/secp256k1";
-import { fromXOnly, getTxHexById } from "@/utils/MarketPlace";
 import { testnet } from "bitcoinjs-lib/src/networks";
 import dbConnect from "@/lib/dbconnect";
-interface OrderInput {
-  unsigned_listing_psbt_base64: string;
-  tap_internal_key: string;
-  listing: Listing;
-  signed_listing_psbt_base64: string;
-}
 
-interface Listing {
-  seller: Seller;
-}
-
-interface Seller {
-  maker_fee_bp?: number;
-  seller_ord_address: string;
-  receive_address: string;
-  price: number;
-  tap_internal_key: string;
-  unsigned_listing_psbt_base64: string;
-}
 
 export async function POST(req: NextRequest) {
   console.log("***** LIST ITEM API CALLED *****");

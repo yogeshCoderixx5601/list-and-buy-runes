@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
       },
     ]);
 
-    console.log(result, "RESULT");
+    console.log(result, "RESULT UNIQUE RUNES");
 
     return NextResponse.json({
       success: true,

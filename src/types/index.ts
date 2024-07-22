@@ -156,3 +156,24 @@ export interface ListData {
   publickey?: string; // Make publickey optional if it can be undefined
   items?: ItemsDetails[]; // Make items optional if it can be undefined
 }
+
+
+interface OrderInput {
+  unsigned_listing_psbt_base64: string;
+  tap_internal_key: string;
+  listing: Listing;
+  signed_listing_psbt_base64: string;
+}
+
+interface Listing {
+  seller: Seller;
+}
+
+interface Seller {
+  maker_fee_bp?: number;
+  seller_ord_address: string;
+  receive_address: string;
+  price: number;
+  tap_internal_key: string;
+  unsigned_listing_psbt_base64: string;
+}
