@@ -83,7 +83,7 @@ const RuneTableFooter: React.FC<Props> = ({ selectedRunes }) => {
               </button>
             </div>
             <p className="flex items-center">
-              {formatNumber(youPayBTC)}{" "}
+              {formatNumber(youPayBTC)}
               <RiBtcFill className="pl-1 text-lg text-bitcoin_orange" />
               /<IoLogoUsd className="text-lg text-green" />
               {youPayUSD.toFixed(2)}

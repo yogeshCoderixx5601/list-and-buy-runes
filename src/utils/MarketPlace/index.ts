@@ -100,7 +100,9 @@ function ecdsaValidator(
   return ecc.verify(msghash, signature, pubkey);
 }
 
-export async function mapUtxos(utxosFromMempool: any[]): Promise<IListingStateUTXO[]> {
+export async function mapUtxos(
+  utxosFromMempool: any[]
+): Promise<IListingStateUTXO[]> {
   const ret: IListingStateUTXO[] = [];
   for (const utxoFromMempool of utxosFromMempool) {
     const txHex = await getTxHexById(utxoFromMempool.txid);
@@ -128,7 +130,7 @@ export async function fetchLatestUtxoData(utxo_id: string): Promise<any> {
     // console.log(response, "------------response");
     const data = response.data;
     return data;
-  } catch (error:any) {
+  } catch (error) {
     throw new Error(`Failed to fetch data: ${error.response.data}`);
   }
 }

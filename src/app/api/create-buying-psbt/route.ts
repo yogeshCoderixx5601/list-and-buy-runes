@@ -133,7 +133,7 @@ export async function POST(
     for?: string;
   }>
 ) {
-  console.log("***** BULK BUY CREATE UNSIGNED BUY PSBT API CALLED *****");
+  console.log("*****  CREATE UNSIGNED BUY PSBT API CALLED *****");
 
   try {
     const body: OrderInput = await req.json();

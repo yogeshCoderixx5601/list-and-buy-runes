@@ -91,8 +91,8 @@ export interface IItem {
 export interface ITransaction {
   pay_address?:string;
   receive_address: string;
-  wallet: string;
   publickey: string;
+  wallet: string;
   items: IItem[];
 }
 
@@ -140,4 +140,19 @@ export interface IListingState {
     buyerPaymentUTXOs?: AddressTxsUtxo[]; // after the selection
     mergedSignedBuyingPSBTBase64?: string;
   };
+}
+
+
+export interface ItemsDetails {
+  price: number;
+  utxo_id?: string; // Make utxo_id optional if it can be undefined
+}
+export interface ListData {
+  unsigned_listing_psbt_base64: string;
+  tap_internal_key?: string; // Make tap_internal_key optional if it can be undefined
+  signed_listing_psbt_base64: string;
+  receiveAddress?: string; // Make receiveAddress optional if it can be undefined
+  wallet?: string | null; // Make wallet optional if it can be null or undefined
+  publickey?: string; // Make publickey optional if it can be undefined
+  items?: ItemsDetails[]; // Make items optional if it can be undefined
 }

@@ -36,11 +36,11 @@ interface Seller {
 }
 
 export async function POST(req: NextRequest) {
-  console.log("***** BULK SIGN API CALLED *****");
+  console.log("***** LIST ITEM API CALLED *****");
 
   const itemData = await req.json();
   const orderInput = itemData.params.listData;
-  console.log(orderInput,"-----------orderInput bulk sign")
+  console.log(orderInput, "-----------orderInput bulk sign");
   // Ensure orderInput contains all necessary fields
   const requiredFields = [
     "items",
@@ -64,18 +64,16 @@ export async function POST(req: NextRequest) {
 
   try {
     bitcoin.initEccLib(secp256k1);
-    if (
-      orderInput.receive_address
-    ) {
+    if (orderInput.receive_address) {
       // console.log("adding final script witness");
 
       const psbt = addFinalScriptWitness(orderInput.signed_listing_psbt_base64);
       if (
         orderInput.receive_address.startsWith("bc1p") ||
-        orderInput.receive_address.startsWith("tb1q")
+        orderInput.receive_address.startsWith("tb1p")
       ) {
         const validSig = verifySignature(psbt);
-        // console.log(validSig, "-----------validSig");
+        console.log(validSig, "-----------validSig");
         if (!validSig) {
           return NextResponse.json(
             {
@@ -141,6 +139,7 @@ export async function POST(req: NextRequest) {
           runeUtxo.listed_seller_receive_address = orderInput.receive_address;
           runeUtxo.signed_psbt = b64;
           runeUtxo.listed_maker_fee_bp = orderInput.maker_fee_bp || 100;
+          runeUtxo.in_memepool= false;
           await runeUtxo.save();
           console.log(runeUtxo, "----------rune runesData");
 

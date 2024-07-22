@@ -13,7 +13,7 @@ interface UserResponse {
 }
 
 export async function getListedUtxos(
-    params: { rune_name: string,listed:boolean }
+    params: { rune_name: string,listed:boolean, in_memepool:boolean }
 ): Promise<{ data?: UserResponse; error: string | null } | undefined> {
   try {
     let url = `${process.env.NEXT_PUBLIC_URL}/api/rune-utxos`;

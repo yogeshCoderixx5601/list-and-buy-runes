@@ -1,4 +1,5 @@
 "use server";
+import { ListData } from "@/types";
 import axios from "axios";
 
 interface OrderResponse {
@@ -15,26 +16,14 @@ interface UserResponse {
 }
 
 
-export interface ItemsDetails {
-  price: number;
-  utxo_id?: string; // Make utxo_id optional if it can be undefined
-}
-export interface ListData {
-  unsigned_listing_psbt_base64: string;
-  tap_internal_key?: string; // Make tap_internal_key optional if it can be undefined
-  signed_listing_psbt_base64: string;
-  receiveAddress?: string; // Make receiveAddress optional if it can be undefined
-  wallet?: string | null; // Make wallet optional if it can be null or undefined
-  publickey?: string; // Make publickey optional if it can be undefined
-  items?: ItemsDetails[]; // Make items optional if it can be undefined
-}
 
-export async function signItems(
+
+export async function listItems(
   listData: ListData
 ): Promise<{ data?: UserResponse; error: string | null } | undefined> {
   try {
     // console.log(listData, "------------helper wallet");
-    let url = `${process.env.NEXT_PUBLIC_URL}/api/sign-psbt`;
+    let url = `${process.env.NEXT_PUBLIC_URL}/api/list-item`;
     const response = await axios.post(url, {
       //here we can optimise the code by removing params send directly data inside list item
       params: {

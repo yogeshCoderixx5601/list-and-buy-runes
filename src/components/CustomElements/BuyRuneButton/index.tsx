@@ -75,9 +75,9 @@ const BuyRuneButton: React.FC<Props> = ({
         walletDetails.wallet
       ) {
         const body = {
-          publickey: walletDetails?.cardinal_pubkey,
           pay_address: walletDetails?.cardinal_address,
           receive_address: walletDetails?.ordinal_address,
+          publickey: walletDetails?.cardinal_pubkey,
           wallet: walletDetails?.wallet,
           fee_rate: feeRate,
           items: runesDetailsArray,
@@ -167,7 +167,7 @@ const BuyRuneButton: React.FC<Props> = ({
   const broadcast = async (signedPsbt: string) => {
     console.log(signedPsbt, "-----------------signedPsbt");
     try {
-      const { data } = await axios.post("/api/order/broadcast", {
+      const { data } = await axios.post("/api/broadcast", {
         signed_psbt: signedPsbt,
         activity_tag: action === "dummy" ? "prepare" : "buy",
         user_address: walletDetails?.cardinal_address,

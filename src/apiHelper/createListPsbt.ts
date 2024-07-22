@@ -18,13 +18,13 @@ export interface ListPsbt {
 }
 
 
-export async function listItems(
+export async function createListPsbt(
   params: ListPsbt
 ): Promise<{ data?: RunesResponse; error: string | null } | undefined> {
   try {
     console.log(params, "-------------params");
     const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_URL}/api/list-items`,
+      `${process.env.NEXT_PUBLIC_URL}/api/create-list-psbt`,
       params
     );
 

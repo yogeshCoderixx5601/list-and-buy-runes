@@ -16,7 +16,7 @@ const SingleRunePage = ({ rune_name }: { rune_name: string }) => {
   const fetchRuneUtxos = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await getListedUtxos({ rune_name:rune_name, listed:true });
+      const response = await getListedUtxos({ rune_name:rune_name, listed:true,in_memepool:false });
       if (response?.data?.result) {
         setRuneUtxos(response.data.result);
       }

@@ -11,6 +11,7 @@ export async function GET(req: NextRequest) {
       {
         $match: {
           listed: true,
+          in_memepool:false,
         },
       },
       {

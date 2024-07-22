@@ -14,11 +14,11 @@ export async function GET(req: NextRequest) {
     await dbConnect();
 
     const result = await RuneUtxo.find(query.find)
-      // .where(query.where)
-      // .limit(query.limit)
-      // .skip(query.start)
-      // .lean()
-      // .exec();
+      .where(query.where)
+      .limit(query.limit)
+      .skip(query.start)
+      .lean()
+      .exec();
     console.log(result, "-------------result RuneUtxo");
 
     return NextResponse.json({

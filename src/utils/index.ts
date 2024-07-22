@@ -95,7 +95,8 @@ export function formatNumber(num: number) {
     // Thousands
     return (num / 1e3).toFixed(1) + "K";
   } else {
-    return num.toString();
+    // Less than thousands
+    return num.toFixed(5);
   }
 }
 

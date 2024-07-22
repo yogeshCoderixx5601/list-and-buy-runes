@@ -18,7 +18,7 @@ bitcoin.initEccLib(secp256k1);
 // Define the interface for the order input
 interface OrderInput {
   utxo_id: string;
-  price: number; 
+  price: number;
   wallet: "Leather" | "Xverse" | "MagicEden" | "Unisat";
   receive_address: string; // cardinal
   publickey: string; // runes pub key
@@ -74,21 +74,26 @@ async function processrunesUtxo(
 
   // Initialize the taproot internal key
   let tap_internal_key = "";
-  
+
   // Loop through each item in the items array
   for (let item of items) {
     const { price, utxo_id } = item;
     console.log(price, utxo_id, "--------items details");
 
     // Fetch the runesUtxo from the database
-    const runesUtxo: AddressTxsUtxo | null = await RuneUtxo.findOne({ utxo_id });
+    const runesUtxo: AddressTxsUtxo | null = await RuneUtxo.findOne({
+      utxo_id,
+    });
     console.log(runesUtxo, "--------------runesUtxo");
 
     if (!runesUtxo) throw new Error("Item hasn't been added to our DB");
 
-    // Check if the address is a taproot address
+    // Check if the address is a taproot address for main net or text both change latter
     const taprootAddress =
-      runesUtxo && runesUtxo?.address && runesUtxo?.address.startsWith("bc1p");
+      runesUtxo &&
+      runesUtxo?.address &&
+      (runesUtxo?.address.startsWith("bc1p") ||
+        runesUtxo?.address.startsWith("tb1p"));
 
     if (runesUtxo.address && runesUtxo.utxo_id) {
       const [runesUtxoTxId, runesUtxoVout] = runesUtxo.utxo_id.split(":");
@@ -121,6 +126,8 @@ async function processrunesUtxo(
           bitcoin.Transaction.SIGHASH_SINGLE |
           bitcoin.Transaction.SIGHASH_ANYONECANPAY,
       };
+
+      console.log(taprootAddress);
 
       // Add the taproot internal key if it's a taproot address
       if (taprootAddress) {
@@ -164,7 +171,7 @@ async function processrunesUtxo(
 
 // Handle the POST request to create an unsigned PSBT
 export async function POST(req: NextRequest, res: NextResponse) {
-  console.log("***** CREATE UNSIGNED PSBT API CALLED bulk listing *****");
+  console.log("***** CREATE UNSIGNED PSBT API CALLED  *****");
 
   try {
     // Parse the request body
@@ -204,7 +211,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
       tap_internal_key,
       message: "Success",
     });
-  } catch (error: any) {
+  } catch (error:any) {
     console.log(error, "error");
     if (!error?.status) console.error("Catch Error: ", error);
     return NextResponse.json(
@@ -213,9 +220,6 @@ export async function POST(req: NextRequest, res: NextResponse) {
     );
   }
 }
-
-
-
 
 // // app/api/order/create-listing-psbt/route.ts
 // import { NextRequest, NextResponse } from "next/server";
@@ -235,7 +239,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
 
 // interface OrderInput {
 //   utxo_id: string;
-//   price: number; 
+//   price: number;
 //   wallet: "Leather" | "Xverse" | "MagicEden" | "Unisat";
 //   receive_address: string; //cardinal
 //   publickey: string; //runes pub key
@@ -358,7 +362,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
 //       });
 //       throw new Error("Ord Provider Unavailable");
 //     }
- 
+
 //   }
 
 //   const unsignedPsbtBase64 = psbt.toBase64();
