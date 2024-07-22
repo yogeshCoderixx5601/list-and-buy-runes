@@ -130,7 +130,7 @@ export async function fetchLatestUtxoData(utxo_id: string): Promise<any> {
     // console.log(response, "------------response");
     const data = response.data;
     return data;
-  } catch (error) {
+  } catch (error:any) {
     throw new Error(`Failed to fetch data: ${error.response.data}`);
   }
 }
