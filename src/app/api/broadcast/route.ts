@@ -121,6 +121,14 @@ export async function POST(
       cardinal_address: user_address,
     });
     console.log({ user });
+
+    // if(user){
+    //  const updateuser= await User.updateOne(
+    //   { cardinal_address: user_address },
+    //   { $set: { runes: [] } }
+    // );
+    // console.log(updateuser,'Runes updated to empty array.');
+    // }
     // console.log(listings, "-----------------------docs before update false");
     if (txid) {
       if (listings) {

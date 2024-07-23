@@ -155,7 +155,7 @@ const RuneUtxos = ({ rune_name }: { rune_name: string }) => {
     const itemsDetailsArray = utxos.map((utxo, utxoIndex) => ({
       price: prices[utxoIndex],
       utxo_id: utxo?.utxo_id,
-    }));
+    })).filter((item) => item.price && !isNaN(item.price));
 
     if (walletDetails && walletDetails.ordinal_address && walletDetails.wallet) {
       const body = {
